@@ -25,10 +25,6 @@ d3.chart("Streamgraph", {
         this.area = d3.svg.area()
             .interpolate("basis")
             .x(function(d) {
-                if (d.key === "Environment / Health"){
-                    console.log(d.date);
-                    // console.log(this.x(d.date));
-                }
                 return this.x(d.date);
             });
 
@@ -73,12 +69,10 @@ d3.chart("Streamgraph", {
             .y1(this.h / 2);
 
         this.on('change:width', function(newWidth) {
-            console.log(newWidth);
             this.setupUsingWidth();
         });
 
         this.on('change:height', function(newHeight) {
-            console.log(newHeight);
             this.setupUsingHeight();
         });
 

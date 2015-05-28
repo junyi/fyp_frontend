@@ -44,3 +44,21 @@ a {
 .tooltip .name {
   font-weight:bold;
 }
+
+.axis {
+  fill: white;
+  shape-rendering: crispEdges;
+}
+
+.axis text{
+  font:10px sans-serif;
+}
+
+.x.axis line{
+  stroke:#ddd;
+  stroke-opacity:0.6;
+}
+
+.x.axis path{
+  display:none;
+}
