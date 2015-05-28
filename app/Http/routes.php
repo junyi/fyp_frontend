@@ -93,6 +93,67 @@ $app->get('/job_category_by_date', function() use ($app) {
     return $result;
 });
 
+$app->get('/industry_by_date', function() use ($app) {
+	// Cache this query for 10 minutes
+	$result = Cache::remember('industry_by_date', 1000, function() 
+	{
+		$industries = DB::table('industry')->get();
+
+		$r = array();
+
+		$all_dates = array();
+
+		foreach ($industries as $industry){
+			$count_by_date = DB::table('job as j')
+				->select(DB::raw('count(1) as count, j.postingDate as date'))
+				->join('assoc_job_industry as aji', 'j.jobId', '=', 'aji.jobId')
+				->join('industry as i', 'i.industryId', '=', 'aji.industryId')
+				->where('i.industryId', '=', $industry['industryId'])
+				->groupBy('j.postingDate')
+				->orderBy('date', 'asc')
+				->get();
+
+			$r[$industry['description']] = $count_by_date;
+
+			foreach ($count_by_date as $i) {
+				if (!in_array($i['date'], $all_dates)){
+					array_push($all_dates, $i['date']);
+				}
+			}
+		}
+
+		foreach ($r as $category => $values){
+			$marked_dates = [];
+
+			foreach ($all_dates as $date) {
+				$marked_dates[$date] = 0;
+			}
+
+			foreach ($values as $i) {
+				if (in_array($i['date'], $all_dates)) {
+					$marked_dates[$i['date']] = 1;
+				}
+			}
+
+			foreach ($marked_dates as $date => $v) {
+				if ($v == 0) {
+					array_push($values, [
+						'date' => $date,
+						'count' => 0
+					]);
+				}
+			}
+
+			usort($values, 'cmp_date'); // Sort dates in ascending order
+
+			$r[$category] = $values;
+		}
+
+		return json_encode($r);
+	});
+    return $result;
+});
+
 function cmp_date($a, $b)
 {
     return strtotime($a['date']) - strtotime($b['date']);
