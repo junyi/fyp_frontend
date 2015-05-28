@@ -14,8 +14,7 @@
 
 <body>
 	<header>
-		<h1>PubNub &#10084; D3</h1>
-		<h2>D3 Bubble Chart with PubNub Data Stream!</h2>
+		<h1>Jobsbank</h1>
 	</header>
 
 	<fieldset>
@@ -23,12 +22,12 @@
 		
 	</fieldset>
 
-	<footer>So what does this chart indicates? It shows message volume per country from an each PubNub data center.<br>
-	The size of each bubble corresponds with volume. To simplify the tutorial, the country names are not labeled, however, you can take a look at the generated source code in dev console to see abbriviated country codes as class name!</footer>
-
 	<script src="js/jquery-1.11.3.min.js"></script>
 	<script src="js/CustomTooltip.js"></script>
 	<script src="js/d3.min.js"></script>	
+	<script src="js/d3.chart.min.js"></script>	
+	<script src="js/bubblechart.js"></script>	
+	<script src="js/streamgraph.js"></script>	
 	<script src="js/app.js"></script>
 
 </body>
