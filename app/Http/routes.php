@@ -49,13 +49,14 @@ $app->get('/job_category_by_date', function() use ($app) {
 				->join('job_category as jc', 'jc.categoryId', '=', 'ajjc.categoryId')
 				->where('jc.categoryId', '=', $category['categoryId'])
 				->groupBy('j.postingDate')
+				->orderBy('date', 'asc')
 				->get();
 
 			$r[$category['category']] = $count_by_date;
 
 			foreach ($count_by_date as $i) {
-				if (!in_array($i->date, $all_dates)){
-					array_push($all_dates, $i->date);
+				if (!in_array($i['date'], $all_dates)){
+					array_push($all_dates, $i['date']);
 				}
 			}
 		}
@@ -68,8 +69,8 @@ $app->get('/job_category_by_date', function() use ($app) {
 			}
 
 			foreach ($values as $i) {
-				if (in_array($i->date, $all_dates)) {
-					$marked_dates[$i->date] = 1;
+				if (in_array($i['date'], $all_dates)) {
+					$marked_dates[$i['date']] = 1;
 				}
 			}
 
@@ -82,6 +83,8 @@ $app->get('/job_category_by_date', function() use ($app) {
 				}
 			}
 
+			usort($values, 'cmp_date'); // Sort dates in ascending order
+
 			$r[$category] = $values;
 		}
 
@@ -89,3 +92,8 @@ $app->get('/job_category_by_date', function() use ($app) {
 	});
     return $result;
 });
+
+function cmp_date($a, $b)
+{
+    return strtotime($a['date']) - strtotime($b['date']);
+}
