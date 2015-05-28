@@ -196,32 +196,6 @@ d3.chart("Streamgraph", {
 						return chart.y(d.count0 + d.count);
 					});
 
-				// // here we create the transition
-				// // and modify the area and line for
-				// // each series through postselection
-				// var t = svg.selectAll(".series")
-				// 	.transition()
-				// 	.duration(duration);
-
-				// // D3 will take care of the details of transitioning
-				// // between the current state of the elements and
-				// // this new line path and opacity.
-				// t.select("path.area")
-				// 	.style("fill-opacity", 1.0)
-				// 	.attr("d", function(d) {
-				// 		return chart.area(d.values);
-				// 	});
-
-				// // 1e-6 is the smallest number in JS that
-				// // won't get converted to scientific notation. 
-				// // as scientific notation is not supported by CSS,
-				// // we need to use this as the low value so that the 
-				// // line doesn't reappear due to an invalid number.
-				// t.select("path.line")
-				// 	.style("stroke-opacity", 1e-6)
-				// 	.attr("d", function(d) {
-				// 		return chart.line(d.values)
-				// 	});
 
 				// now we bind our data to create
 				// a new group for each series
@@ -249,7 +223,23 @@ d3.chart("Streamgraph", {
 
 				series.append("path")
 					.attr("class", "line")
-					.style("stroke-opacity", 1e-6)
+					.style("stroke-opacity", 1e-6);
+
+				series.on("mouseover", function(d, i) {
+						series.transition()
+							.duration(250)
+							.attr("opacity", function(d, j) {
+								return j != i ? 0.6 : 1;
+							})
+					})
+					.on("mouseout", function(d, i) {
+						series.transition()
+							.duration(250)
+							.attr("opacity", "1");
+						d3.select(this)
+							.classed("hover", false)
+							.attr("stroke-width", "0px"), chart.tooltip.html("<p>" + d.key + "<br>" + d.date + "</p>").style("visibility", "hidden");
+					});
 
 				return series;
 			}
