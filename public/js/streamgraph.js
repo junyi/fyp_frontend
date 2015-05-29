@@ -90,6 +90,13 @@ d3.chart("Streamgraph", {
             return d;
         }).left;
 
+        // the axis lines will go behind
+        // the rest of the display, so create
+        // it first
+        this.streamBase.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + chart.h + ")");
+
         this.layer("streamgraph", this.streamBase, {
             dataBind: function(data) {
                 // a parser to convert our date string into a JS time object.
@@ -163,22 +170,15 @@ d3.chart("Streamgraph", {
 
                 chart.xAxis.tickValues(dates);
 
-
-                // the axis lines will go behind
-                // the rest of the display, so create
-                // it first
-                this.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + chart.h + ")")
-                    .call(chart.xAxis);
+                this.selectAll('.x.axis').call(chart.xAxis);
 
                 // 'wiggle' is the offset to use 
                 // for streamgraphs.
-                chart.stack.offset("wiggle");
+                chart.stack.offset("silhouette");
 
                 // the stack layout will set the count0 attribute
                 // of our data
-                chart.stack(data);
+                chart.layer = chart.stack(data);
 
                 // reset our y domain and range so that it 
                 // accommodates the highest value + offset
@@ -213,46 +213,32 @@ d3.chart("Streamgraph", {
                 var svg = this.selectAll(".series")
                     .data(data);
 
+                svg.transition()
+                    .duration(750);
+
                 return svg;
 
             },
             insert: function() {
+                console.log("Insert called");
 
                 var series = this.append("g")
                     .attr("class", "series")
-
-                // add some paths that will
-                // be used to display the lines and
-                // areas that make up the charts
-                series.append("path")
-                    .attr("class", "area")
-                    .style("fill", function(d) {
-                        return chart.color(d.key)
-                    })
-                    .attr("d", function(d) {
-                        return chart.area(d.values)
-                    });
-
-                series.append("path")
-                    .attr("class", "line")
-                    .style("stroke-opacity", 1e-6)
-                    .attr("d", function(d) {
-                        return chart.line(d.values);
-                    });
-
-                series.on("mouseover", function(d, i) {
-                        series.transition()
+                    .on("mouseover", function(d, i) {
+                        chart.base.selectAll('.series').transition()
                             .duration(250)
                             .attr("opacity", function(d, j) {
                                 return j != i ? 0.2 : 1;
                             });
-                        // return chart.showDetails(d, i, this);
-
                     })
                     .on("mouseout", function(d, i) {
-                        series.transition()
+                        chart.base.selectAll('.series').transition()
                             .duration(250)
                             .attr("opacity", "1");
+
+                        chart.base.selectAll('.tick').transition()
+                            .duration(100)
+                            .style("opacity", "1");
                         return chart.hideDetails(d, i, this);
                     })
                     .on("mousemove", function(d, i) {
@@ -268,6 +254,12 @@ d3.chart("Streamgraph", {
                             d1 = selected[i],
                             d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
+                        chart.base.selectAll('.tick').transition()
+                            .duration(100)
+                            .style("opacity", function(d, j) {
+                                return j != i ? 0.2 : 1;
+                            });
+
                         d3.select(this)
                             .classed("hover", true)
                             .attr("stroke", "#fff")
@@ -276,10 +268,74 @@ d3.chart("Streamgraph", {
 
                         return chart.showDetails(d, i, this);
 
-
-                    })
+                    });
 
                 return series;
+            },
+            events: {
+                enter: function() {
+                    // add some paths that will
+                    // be used to display the lines and
+                    // areas that make up the charts
+                    console.log("Enter called");
+                    this.append("path")
+                        .attr("class", "area")
+                        .style("fill", function(d) {
+                            return chart.color(d.key)
+                        })
+                        .attr("d", function(d) {
+                            return chart.line(d.values);
+                        })
+
+                    var series = this;
+                    this.append("path")
+                        .attr("class", "line")
+                        .style("stroke-opacity", 1e-6)
+                        .attr("d", function(d) {
+                            return chart.area(d.values);
+                        })
+
+                    chart.base.selectAll("path.line")
+                        .data(chart.layer)
+                        .transition()
+                        .duration(750)
+                        .attr("d", function(d) {
+                            return chart.line(d.values);
+                        });
+
+                    chart.base.selectAll("path.area")
+                        .data(chart.layer)
+                        .transition()
+                        .duration(750)
+                        .attr("d", function(d) {
+                            return chart.area(d.values);
+                        });
+
+                },
+                update: function() {
+                    console.log("Update called");
+
+                    chart.base.selectAll("path.line")
+                        .data(chart.layer)
+                        .transition()
+                        .duration(750)
+                        .attr("d", function(d) {
+                            return chart.line(d.values);
+                        });
+
+                    chart.base.selectAll("path.area")
+                        .data(chart.layer)
+                        .transition()
+                        .duration(750)
+                        .attr("d", function(d) {
+                            return chart.area(d.values);
+                        });
+                },
+                exit: function() {
+                    console.log("Exit called");
+
+                    this.transition().remove();
+                }
             }
         });
 
@@ -313,16 +369,6 @@ d3.chart("Streamgraph", {
         return this;
     },
 
-    // configures the radius of the circles in the chart.
-    // when called without arguments, returns the
-    // current radius.
-    radius: function(newRadius) {
-        if (arguments.length === 0) {
-            return this.r;
-        }
-        this.r = newRadius;
-        return this;
-    },
     setupUsingWidth: function() {
 
         this.x.range([0, this.w]);
@@ -351,6 +397,10 @@ d3.chart("Streamgraph", {
             .y1(this.h / 2);
 
         this.base.attr('height', this.h + 20);
+
+        this.base.selectAll(".x.axis")
+            .attr("transform", "translate(0," + this.h + ")");
+
     },
     showDetails: function(data, i, element) {
         var content;

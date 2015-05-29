@@ -17,6 +17,14 @@
 		<h1>Jobsbank</h1>
 	</header>
 
+	<select id="dataopt">
+		<option value="jc">Job category</option>
+		<option value="i">Industry</option> 
+		<option value="et">Employment type</option>
+		<option value="l">Location</option>
+		<option value="jl" selected="selected">Job level</option>
+	</select>   
+
 	<div id="graph"></div>
 		
 	<script src="js/jquery-1.11.3.min.js"></script>
