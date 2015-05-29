@@ -19,6 +19,18 @@ a {
   color: gold;
 }
 
+svg {
+  display: block;
+  margin: auto;
+  padding: 20px;
+}
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 10px;
+}
+
 .tooltip {
 	position: absolute;
 	top: 100px;

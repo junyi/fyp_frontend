@@ -17,17 +17,15 @@
 		<h1>Jobsbank</h1>
 	</header>
 
-	<fieldset>
-		<section id="graph"></section>
+	<div id="graph"></div>
 		
-	</fieldset>
-
 	<script src="js/jquery-1.11.3.min.js"></script>
 	<script src="js/CustomTooltip.js"></script>
-	<script src="js/d3.min.js"></script>	
-	<script src="js/d3.chart.min.js"></script>	
-	<script src="js/bubblechart.js"></script>	
-	<script src="js/streamgraph.js"></script>	
+	<script src="js/d3.min.js"></script>
+	<script src="js/colorbrewer.v1.min.js"></script>
+	<script src="js/d3.chart.min.js"></script>
+	<script src="js/bubblechart.js"></script>
+	<script src="js/streamgraph.js"></script>
 	<script src="js/app.js"></script>
 
 </body>

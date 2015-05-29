@@ -15,8 +15,11 @@ d3.chart("Streamgraph", {
         this.y = d3.scale.linear()
             .range([this.h, 0]);
 
-        this.color = d3.scale.category10();
+        this.paddingH = 20;
 
+        // this.color = d3.scale.category20();
+        this.color = d3.scale.ordinal()
+            .range(colorbrewer.RdYlGn[9]);
         this.tooltip = CustomTooltip("tooltip", 240);
 
         // area generator to create the
@@ -41,7 +44,7 @@ d3.chart("Streamgraph", {
         this.xAxis = d3.svg.axis()
             .scale(this.x)
             .tickSize(-this.h)
-            .tickFormat(d3.time.format('%Y-%m-%d'))
+            .tickFormat(d3.time.format('%a %d'))
 
         // stack layout for streamgraph
         // and stacked area chart
@@ -79,7 +82,13 @@ d3.chart("Streamgraph", {
         this.streamBase = this.base.append("g")
             .classed("streamgraph", true)
             .attr('width', this.w)
-            .attr('height', this.h);
+            .attr('height', this.h)
+            .style('padding-left', this.paddingH)
+            .style('padding-right', this.paddingH);
+
+        this.bisectDate = d3.bisector(function(d) {
+            return d;
+        }).left;
 
         this.layer("streamgraph", this.streamBase, {
             dataBind: function(data) {
@@ -149,7 +158,7 @@ d3.chart("Streamgraph", {
                 var index = 0;
                 dates = dates.filter(function(d) {
                     index += 1;
-                    return (index % 2) == 0;
+                    return (index % 1) == 0;
                 });
 
                 chart.xAxis.tickValues(dates);
@@ -197,6 +206,7 @@ d3.chart("Streamgraph", {
                         return chart.y(d.count0 + d.count);
                     });
 
+                chart.data = data;
 
                 // now we bind our data to create
                 // a new group for each series
@@ -207,6 +217,7 @@ d3.chart("Streamgraph", {
 
             },
             insert: function() {
+
                 var series = this.append("g")
                     .attr("class", "series")
 
@@ -224,15 +235,18 @@ d3.chart("Streamgraph", {
 
                 series.append("path")
                     .attr("class", "line")
-                    .style("stroke-opacity", 1e-6);
+                    .style("stroke-opacity", 1e-6)
+                    .attr("d", function(d) {
+                        return chart.line(d.values);
+                    });
 
                 series.on("mouseover", function(d, i) {
                         series.transition()
                             .duration(250)
                             .attr("opacity", function(d, j) {
-                                return j != i ? 0.6 : 1;
+                                return j != i ? 0.2 : 1;
                             });
-                        return chart.showDetails(d, i, this);
+                        // return chart.showDetails(d, i, this);
 
                     })
                     .on("mouseout", function(d, i) {
@@ -240,7 +254,30 @@ d3.chart("Streamgraph", {
                             .duration(250)
                             .attr("opacity", "1");
                         return chart.hideDetails(d, i, this);
-                    });
+                    })
+                    .on("mousemove", function(d, i) {
+                        var selected = d.values;
+                        var datearray = [];
+                        for (var k = 0; k < selected.length; k++) {
+                            datearray[k] = selected[k].date;
+                        }
+
+                        var x0 = chart.x.invert(d3.mouse(this)[0]),
+                            i = chart.bisectDate(datearray, x0),
+                            d0 = selected[i - 1],
+                            d1 = selected[i],
+                            d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+                        d3.select(this)
+                            .classed("hover", true)
+                            .attr("stroke", "#fff")
+                            .attr("stroke-width", "0.5px");
+                        // tooltip.html("<p>" + d.key + "<br>" + invertedx + "</p>").style("visibility", "visible");
+
+                        return chart.showDetails(d, i, this);
+
+
+                    })
 
                 return series;
             }
@@ -252,6 +289,7 @@ d3.chart("Streamgraph", {
     // when called without arguments, returns the
     // current width.
     width: function(newWidth) {
+        newWidth = newWidth - this.paddingH * 2;
         if (arguments.length === 0) {
             return this.w;
         }
@@ -265,6 +303,7 @@ d3.chart("Streamgraph", {
     // when called without arguments, returns the
     // current height.
     height: function(newHeight) {
+        newHeight = newHeight - 20;
         if (arguments.length === 0) {
             return this.h;
         }
@@ -290,7 +329,7 @@ d3.chart("Streamgraph", {
 
         this.xAxis.scale(this.x);
 
-        this.streamBase.attr('width', this.w);
+        this.base.attr('width', this.w);
 
         // this.area.x(function(d) {
         //  return this.x(d.date);
@@ -311,12 +350,14 @@ d3.chart("Streamgraph", {
         this.area.y0(this.h / 2)
             .y1(this.h / 2);
 
-        this.streamBase.attr('height', this.h);
+        this.base.attr('height', this.h + 20);
     },
     showDetails: function(data, i, element) {
         var content;
+        var formatDate = d3.time.format("%Y-%m-%d");
         d3.select(element).attr("stroke", "black");
         content = "<span class=\"name\">Category:</span><span class=\"value\"> " + data.key + "</span><br/>";
+        content += "<span class=\"name\">Date:</span><span class=\"value\"> " + formatDate(data.date) + "</span><br/>";
         content += "<span class=\"name\">Count:</span><span class=\"value\"> " + data.count + "</span><br/>";
         return this.tooltip.showTooltip(content, d3.event);
     },

@@ -1,11 +1,13 @@
 (function() {
 
-    var parentWidth = $("#graph").parent().width();
+    var parent = $("#graph").parent();
+    var parentWidth = parent.width();
+
     var graph = d3.select("#graph")
         .append("svg")
         .chart("Streamgraph")
         .width(parentWidth)
-        .height(parentWidth/(4/3));
+        .height(parentWidth/(2.5));
 
     d3.json('/job_category_by_date', function(err, json) {
 
