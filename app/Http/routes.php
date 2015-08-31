@@ -164,7 +164,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 			}
 
 			foreach ($values as $i) {
-				if (in_array($i->date], $all_dates)) {
+				if (in_array($i->date, $all_dates)) {
 					$marked_dates[$i->date] = 1;
 				}
 			}
