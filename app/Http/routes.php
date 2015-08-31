@@ -171,10 +171,11 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 
 			foreach ($marked_dates as $date => $v) {
 				if ($v == 0) {
-					array_push($values, [
+					$d = [
 						'date' => $date,
 						'count' => 0
-					]);
+					];
+					array_push($values, (object) $d);
 				}
 			}
 
