@@ -150,7 +150,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 			$r[$i->{$table_field}] = $count_by_date;
 
 			foreach ($count_by_date as $i) {
-				if (!in_array($i['date'], $all_dates)){
+				if (!in_array($i->date, $all_dates)){
 					array_push($all_dates, $i->date);
 				}
 			}
