@@ -17,7 +17,7 @@ $app->get('/', function() use ($app) {
     return view('home');
 });
 
-$app->get('/job_category', function() use ($app) {
+$app->get('job_category', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('job_count_by_category', 10, function() 
 	{
@@ -32,7 +32,7 @@ $app->get('/job_category', function() use ($app) {
     return $result;
 });
 
-$app->get('/job_level_by_date', function() use ($app) {
+$app->get('job_level_by_date', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('job_level_by_date', 1000, function() 
 	{
@@ -49,7 +49,7 @@ $app->get('/job_level_by_date', function() use ($app) {
     return $result;
 });
 
-$app->get('/location_by_date', function() use ($app) {
+$app->get('location_by_date', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('location_by_date', 1000, function() 
 	{
@@ -66,7 +66,7 @@ $app->get('/location_by_date', function() use ($app) {
     return $result;
 });
 
-$app->get('/emp_type_by_date', function() use ($app) {
+$app->get('emp_type_by_date', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('emp_type_by_date', 1000, function() 
 	{
@@ -83,7 +83,7 @@ $app->get('/emp_type_by_date', function() use ($app) {
     return $result;
 });
 
-$app->get('/job_category_by_date', function() use ($app) {
+$app->get('job_category_by_date', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('job_category_by_date', 1000, function() 
 	{
@@ -100,7 +100,7 @@ $app->get('/job_category_by_date', function() use ($app) {
     return $result;
 });
 
-$app->get('/industry_by_date', function() use ($app) {
+$app->get('industry_by_date', function() use ($app) {
 	// Cache this query for 10 minutes
 	$result = Cache::remember('industry_by_date', 1000, function() 
 	{
