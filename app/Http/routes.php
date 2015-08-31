@@ -120,7 +120,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 
 	function cmp_date($a, $b)
 	{
-	    return strtotime($a['date']) - strtotime($b['date']);
+	    return strtotime($a->date) - strtotime($b->date);
 	}
 
 	function get_by_date($info)
