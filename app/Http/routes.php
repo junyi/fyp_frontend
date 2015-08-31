@@ -147,11 +147,11 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 				->orderBy('date', 'asc')
 				->get();
 
-			$r[$i[$table_field]] = $count_by_date;
+			$r[$i->{$table_field}] = $count_by_date;
 
 			foreach ($count_by_date as $i) {
 				if (!in_array($i['date'], $all_dates)){
-					array_push($all_dates, $i['date']);
+					array_push($all_dates, $i->date);
 				}
 			}
 		}
@@ -164,8 +164,8 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 			}
 
 			foreach ($values as $i) {
-				if (in_array($i['date'], $all_dates)) {
-					$marked_dates[$i['date']] = 1;
+				if (in_array($i->date], $all_dates)) {
+					$marked_dates[$i->date] = 1;
 				}
 			}
 
