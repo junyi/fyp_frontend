@@ -142,7 +142,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 				->select(DB::raw('count(1) as count, j.postingDate as date'))
 				->join("$assoc as a", 'j.jobId', '=', 'a.jobId')
 				->join("$table as i", "i.$table_primary", '=', "a.$assoc_table_primary")
-				->where("i.$table_primary", '=', $i[$table_primary])
+				->where("i.$table_primary", '=', $i->{$table_primary})
 				->groupBy('j.postingDate')
 				->orderBy('date', 'asc')
 				->get();

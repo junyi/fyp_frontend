@@ -21,7 +21,7 @@
                 break;
         }
 
-        updateGraph(link);
+        updateGraph('/fyp/' + link);
     });
 
     var parent = $("#graph").parent();
@@ -39,6 +39,6 @@
         });
     }
 
-    updateGraph('/job_level_by_date');
+    updateGraph('fyp/job_level_by_date');
 
 })();
