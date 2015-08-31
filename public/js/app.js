@@ -39,6 +39,6 @@
         });
     }
 
-    updateGraph('fyp/job_level_by_date');
+    updateGraph('/fyp/job_level_by_date');
 
 })();
