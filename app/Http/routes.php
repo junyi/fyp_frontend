@@ -17,6 +17,10 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 	    return view('home');
 	});
 
+	$app->get('/map', function() use ($app) {
+	    return view('map');
+	});
+
 	$app->get('job_category', function() use ($app) {
 		// Cache this query for 10 minutes
 		$result = Cache::remember('job_count_by_category', 10, function() 
@@ -120,7 +124,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 
 	function cmp_date($a, $b)
 	{
-	    return strtotime($a->date) - strtotime($b->date);
+	    return strtotime($a['date']) - strtotime($b['date']);
 	}
 
 	function get_by_date($info)
@@ -142,16 +146,16 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 				->select(DB::raw('count(1) as count, j.postingDate as date'))
 				->join("$assoc as a", 'j.jobId', '=', 'a.jobId')
 				->join("$table as i", "i.$table_primary", '=', "a.$assoc_table_primary")
-				->where("i.$table_primary", '=', $i->{$table_primary})
+				->where("i.$table_primary", '=', $i[$table_primary])
 				->groupBy('j.postingDate')
 				->orderBy('date', 'asc')
 				->get();
 
-			$r[$i->{$table_field}] = $count_by_date;
+			$r[$i[$table_field]] = $count_by_date;
 
 			foreach ($count_by_date as $i) {
-				if (!in_array($i->date, $all_dates)){
-					array_push($all_dates, $i->date);
+				if (!in_array($i['date'], $all_dates)){
+					array_push($all_dates, $i['date']);
 				}
 			}
 		}
@@ -164,8 +168,8 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 			}
 
 			foreach ($values as $i) {
-				if (in_array($i->date, $all_dates)) {
-					$marked_dates[$i->date] = 1;
+				if (in_array($i['date'], $all_dates)) {
+					$marked_dates[$i['date']] = 1;
 				}
 			}
 
@@ -175,7 +179,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 						'date' => $date,
 						'count' => 0
 					];
-					array_push($values, (object) $d);
+					array_push($values, $d);
 				}
 			}
 

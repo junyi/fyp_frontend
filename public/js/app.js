@@ -33,6 +33,17 @@
         .width(parentWidth)
         .height(parentWidth/(2.5));
 
+    var margin = {top: 20, right: 20, bottom: 30, left: 35};
+        var navWidth = parentWidth,
+        navHeight = 100 - margin.top - margin.bottom;
+
+    var navChart = d3.select('#graph').classed('chart', true).append('svg')
+        .classed('navigator', true)
+        .attr('width', navWidth + margin.left + margin.right)
+        .attr('height', navHeight + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
     function updateGraph(link) {
         d3.json(link, function(err, json) {
             graph.draw(json);

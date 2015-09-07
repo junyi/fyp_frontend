@@ -79,12 +79,36 @@ d3.chart("Streamgraph", {
             this.setupUsingHeight();
         });
 
+        this.zoom = d3.behavior.zoom()
+            .x(this.x)
+            .on('zoom', function(){
+                var zoom = chart.zoom;
+                var xScale = chart.x;
+                // var t = zoom.translate(),
+                //     tx = t[0],
+                //     ty = t[1];
+                    
+                // tx = Math.min(tx, 0);
+                // tx = Math.max(tx, chart.w - chart.x(chart.maxDate));
+                // console.log(tx);
+                // zoom.translate([tx, ty]);
+                if (xScale.domain()[0] < chart.minDate) {
+                    var x = zoom.translate()[0] - xScale(chart.minDate) + xScale.range()[0];
+                    zoom.translate([x, 0]);
+                } else if (xScale.domain()[1] > chart.maxDate) {
+                    var x = zoom.translate()[0] - xScale(chart.maxDate) + xScale.range()[1];
+                    zoom.translate([x, 0]);
+                }
+                chart.updateGraph();
+            })
+
         this.streamBase = this.base.append("g")
             .classed("streamgraph", true)
             .attr('width', this.w)
             .attr('height', this.h)
             .style('padding-left', this.paddingH)
-            .style('padding-right', this.paddingH);
+            .style('padding-right', this.paddingH)
+            .call(this.zoom);
 
         this.bisectDate = d3.bisector(function(d) {
             return d;
@@ -151,7 +175,9 @@ d3.chart("Streamgraph", {
 
 
                 chart.x.domain([chart.minDate, chart.maxDate]);
-
+                chart.zoom
+                    .x(chart.x)
+                    .scaleExtent([chart.x(chart.minDate), chart.x(chart.maxDate)]);
                 // D3's axis functionality usually works great
                 // however, I was having some aesthetic issues
                 // with the tick placement
@@ -162,13 +188,13 @@ d3.chart("Streamgraph", {
                     return v.date;
                 });
 
-                var index = 0;
-                dates = dates.filter(function(d) {
-                    index += 1;
-                    return (index % 1) == 0;
-                });
+                // var index = 0;
+                // dates = dates.filter(function(d) {
+                //     index += 1;
+                //     return (index % 2) == 0;
+                // });
 
-                chart.xAxis.tickValues(dates);
+                // chart.xAxis.tickValues(dates);
 
                 this.selectAll('.x.axis').call(chart.xAxis);
 
@@ -339,6 +365,21 @@ d3.chart("Streamgraph", {
             }
         });
 
+    },
+    updateGraph: function(){
+        var chart=this;
+        chart.base.selectAll("path.line")
+            .data(chart.layer)
+            .attr("d", function(d) {
+                return chart.line(d.values);
+            });
+
+        chart.base.selectAll("path.area")
+            .data(chart.layer)
+            .attr("d", function(d) {
+                return chart.area(d.values);
+            });
+        this.streamBase.selectAll('.x.axis').call(this.xAxis);
     },
 
     // configures the width of the chart.
