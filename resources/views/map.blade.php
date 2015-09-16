@@ -103,7 +103,7 @@
 	    var map = new Datamap({
 	        element: document.getElementById('container'),
 	        geographyConfig: {
-	            dataUrl: '/data/district.topojson',
+	            dataUrl: 'data/district.topojson',
 	            popupTemplate: function(geo, data) {
 	                return ['<div class="hoverinfo"><strong>',
 	                        'District ' + data.name + '<br/>',

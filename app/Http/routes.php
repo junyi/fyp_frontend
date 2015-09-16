@@ -137,6 +137,10 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 
 		$major_type = DB::table($table)->get();
 
+		if (is_object($major_type)) {
+			$major_type = json_decode(json_encode($major_type), true);
+		}
+
 		$r = array();
 
 		$all_dates = array();
