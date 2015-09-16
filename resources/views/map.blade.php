@@ -9,6 +9,7 @@
 	<meta name="author" content="Hee Jun Yi">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="css/d3.slider.css">
+	<link rel="stylesheet" href="css/style.css">
 	<style>
 		.wrapper {
 			width: 800px;
