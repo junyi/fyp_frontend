@@ -137,9 +137,7 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 
 		$major_type = DB::table($table)->get();
 
-		if (is_object($major_type)) {
-			$major_type = json_decode(json_encode($major_type), true);
-		}
+		$major_type = json_decode(json_encode($major_type), true);
 
 		$r = array();
 
@@ -154,6 +152,8 @@ $app->group(['prefix' => 'fyp'], function ($app) {
 				->groupBy('j.postingDate')
 				->orderBy('date', 'asc')
 				->get();
+
+			$count_by_date = json_decode(json_encode($count_by_date), true);
 
 			$r[$i[$table_field]] = $count_by_date;
 
