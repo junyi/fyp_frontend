@@ -12,6 +12,11 @@ use App\Models\Jobsbank\JobCategory;
 | and give it the controller to call when that URI is requested.
 |
 */
+
+// $app->get('/map', function() use ($app) {
+//     return view('map');
+// });
+
 $app->group(['prefix' => 'fyp'], function ($app) {
 	$app->get('/', function() use ($app) {
 	    return view('home');

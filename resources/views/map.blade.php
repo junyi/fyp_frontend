@@ -8,12 +8,22 @@
 	<meta name="description" content="D3">
 	<meta name="author" content="Hee Jun Yi">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.0.2/nouislider.min.css">
 	<link rel="stylesheet" href="css/d3.slider.css">
 	<link rel="stylesheet" href="css/style.css">
 	<style>
+
+		body {
+			margin: 0;
+		}
+
+		#container {
+			margin-top: 100px;
+		}
+
 		.wrapper {
 			width: 800px;
-			margin-top: 70px;
+			margin-top: 100px;
 			margin-left: auto;
 			margin-right: auto;
 		}
@@ -21,15 +31,39 @@
 		#date {
 			text-align: center;
 		}
+
+		#slider {
+			margin-top: 100px;
+			border: 1px solid #5399FF;
+		}
+
+		#date {
+			margin-top: 20px;
+		}
+
+		.hoverinfo {
+			color: black;
+		}
+
+		.noUi-base {
+			background: #5399FF;
+		}
+
+		.datamaps-legend {
+			right: 200px;
+			left: 200px !important;
+		}
+
 	</style>
 </head>
 
 <body>
 	<header>
-		<h1>Jobsbank</h1>
+		<h1 style="margin: 1em;">Jobsbank</h1>
 	</header>
 
-	<div id="container" style="position: relative; width: 100%; height: 700px;"></div>
+	<div id="container" style="position: relative; width: 100%; height: 500px;"></div>
+
 	<div class="wrapper">
 		<div id="slider"></div>
 		<div id="date"></div>
@@ -38,6 +72,8 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.0.2/nouislider.min.js"></script>
+	<script src="js/colorbrewer.v1.min.js"></script>
 	<script src="js/d3.slider.js"></script>
 	<script src="js/datamaps.none.min.js"></script>
 	<script>
@@ -45,11 +81,14 @@
 	    .defer(d3.json, "/fyp/location_by_date")
 	    .await(ready);
 
-	var array = [25, 50, 75, 100, 125, 150];
+	var array = [];
+	for (var i = 0; i < 9; i++) {
+		array.push(25 + 25 * i);
+	};
 
 	var color = d3.scale.threshold()
     		.domain(array)
-    		.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+    		.range(colorbrewer.Blues[9]);
 
     var colorKey = d3.scale.threshold()
     		.domain(array)
@@ -78,28 +117,55 @@
 		})
 
 		fills = _.object(color.domain(), color.range());
-		fills['defaultFill'] = 'green';
+		fills['defaultFill'] = color.range()[color.range().length - 1];
 
-		data = reverseMap[Object.keys(reverseMap)[0]];
-		console.log(Object.keys(reverseMap));
-		console.log(Math.min.apply(null, Object.keys(reverseMap)))
+		var initialDate = Object.keys(reverseMap)[0];
+		data = reverseMap[initialDate];
+		console.log(data);
+		d3.select('#date').html(initialDate);
 
-		var dates = _.map(Object.keys(reverseMap), function(i){
-			return new Date(i);
-		}).sort();
+		// console.log(Object.keys(reverseMap));
+		// console.log(Math.min.apply(null, Object.keys(reverseMap)))
 
-		var format = d3.time.format("%Y-%m-%d");
+		// var dates = _.map(Object.keys(reverseMap), function(i){
+		// 	return new Date(i);
+		// }).sort();
+		// console.log(dates);
 
-	    d3.select('#slider')
-	    	.call(d3.slider()
-	    		.min(0)
-	    		.max(dates.length - 1)
-	    		.step(1)
-	    		.on("slide", function(event, value){
-	    			d3.select('#date').html(format(dates[value]));
-					data = reverseMap[Object.keys(reverseMap)[value]];
-					map.updateChoropleth(data);
-	    		}));
+		// var format = d3.time.format("%Y-%m-%d");
+
+	    // d3.select('#slider')
+	    // 	.call(d3.slider()
+	    // 		.min(0)
+	    // 		.max(dates.length - 1)
+	    // 		.step(1)
+	    // 		.on("slide", function(event, value){
+	    // 			d3.select('#date').html(format(dates[value]));
+					// data = reverseMap[Object.keys(reverseMap)[value]];
+					// map.updateChoropleth(data);
+	    // 		}));
+
+	    var slider = document.getElementById('slider');
+
+		noUiSlider.create(slider, {
+			start: 0,
+			step: 1,
+			range: {
+			  'min': 0,
+			  'max': Object.keys(reverseMap).length - 1
+			}
+		});
+
+
+		slider.noUiSlider.on('slide', function(){
+			var value = parseInt(slider.noUiSlider.get());
+			var date = Object.keys(reverseMap)[value];
+			d3.select('#date').html(date);
+			data = reverseMap[date];
+			console.log(reverseMap);
+			console.log(date, data);
+			map.updateChoropleth(data);
+		});
 
 	    var map = new Datamap({
 	        element: document.getElementById('container'),
