@@ -8,7 +8,7 @@
 	<meta name="description" content="D3">
 	<meta name="author" content="Hee Jun Yi">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/d3.slider.css">
+	<link rel="stylesheet" href="../css/d3.slider.css">
 	<style>
 		.wrapper {
 			width: 800px;
@@ -31,14 +31,14 @@
 	<div id="container" style="position: relative; width: 100%; height: 700px;"></div>
 	<div class="wrapper">
 		<div id="slider"></div>
-		<div id="date">2014</div>
+		<div id="date"></div>
 	</div>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-	<script src="/js/d3.slider.js"></script>
-	<script src="/js/datamaps.none.min.js"></script>
+	<script src="../js/d3.slider.js"></script>
+	<script src="../js/datamaps.none.min.js"></script>
 	<script>
 	queue()
 	    .defer(d3.json, "/fyp/location_by_date")
